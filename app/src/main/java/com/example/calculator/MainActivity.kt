@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() , View.OnClickListener {
     lateinit var btn9 : Button
     lateinit var btn0 : Button
     var operand : Double = 0.0
-    var operandLast : Double = 0.0 //for repeated equals
     var operation : Int = 0 // 0:None 1:Add 2:Sub 3:Mul 4:Div
     var clear : Boolean = false
     var doCalculation : Boolean = false // quick fix that im not proud of
@@ -127,6 +126,15 @@ class MainActivity : AppCompatActivity() , View.OnClickListener {
                 }
             }
 
+            R.id.button_negative -> {
+                if(display.text[0] == '-')
+                    display.text = display.text.substring(1,display.text.length)
+                else
+                    display.text = "-${display.text}"
+                if(!doCalculation)
+                    operand *= -1
+            }
+
             R.id.button_add -> {
                 if(doCalculation)
                     calculate()
@@ -174,6 +182,11 @@ class MainActivity : AppCompatActivity() , View.OnClickListener {
             clear = false
         }
 
+        if(n == "." && display.text == "0")
+        {
+            display.text = "0."
+            return
+        }
 
         if(display.text.toString()=="0")
         {
@@ -188,16 +201,26 @@ class MainActivity : AppCompatActivity() , View.OnClickListener {
     {
         doCalculation = false
         var res : Double = display.text.toString().toDouble()
+        println("$operand and ${display.text.toString().toDouble()}")
         when(operation){
             1 -> res = (operand + display.text.toString().toDouble())
             2 -> res = (operand - display.text.toString().toDouble())
             3 -> res = (operand * display.text.toString().toDouble())
             4 -> res = (operand / display.text.toString().toDouble())
         }
+        var resString = res.toString()
+        if(resString.length > 10)
+        {
+            resString = resString.substring(0,11)
+            if(resString[10] == '.'){
+                resString = resString.substring(0,10)
+            }
+        }
+
         if(res % 1.0 == 0.0)
-            display.text = res.toInt().toString()
+            display.text = resString.toDouble().toInt().toString()
         else
-            display.text = res.toString()
+            display.text = resString
         operand = display.text.toString().toDouble()
     }
 }
